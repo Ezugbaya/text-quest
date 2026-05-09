@@ -17,8 +17,6 @@ public class QuestService {
 
     private void initSteps() {
 
-
-
         steps.put("start",
                 new QuestStep(
                         "start",
@@ -35,31 +33,43 @@ public class QuestService {
                 )
         );
 
-
-
         steps.put("corridor",
                 new QuestStep(
                         "corridor",
 
                         "Ты вошел в темный коридор",
 
-                        "Подняться наверх",
+                        "Подняться вверх",
                         "Спуститься в подвал",
 
-                        "winEscape",
+                        "upperLevel",
                         "loseBasement",
 
                         false
                 )
         );
 
+        steps.put("upperLevel",
+                new QuestStep(
+                        "upperLevel",
 
+                        "Ты поднялся на верхний уровень станции",
+
+                        "Зайти в комнату капитана",
+                        "Пройти дальше по коридору",
+
+                        "loseCaptain",
+                        "winEscape",
+
+                        false
+                )
+        );
 
         steps.put("winEscape",
                 new QuestStep(
                         "winEscape",
 
-                        "Ты нашел спасательный корабль",
+                        "Ты нашел спасательный корабль и улетел со станции",
 
                         "",
                         "",
@@ -70,8 +80,6 @@ public class QuestService {
                         true
                 )
         );
-
-
 
         steps.put("loseWindow",
                 new QuestStep(
@@ -89,13 +97,27 @@ public class QuestService {
                 )
         );
 
-
-
         steps.put("loseBasement",
                 new QuestStep(
                         "loseBasement",
 
-                        "В подвале оказалась ловушка",
+                        "В подвале оказалась смертельная ловушка",
+
+                        "",
+                        "",
+
+                        "",
+                        "",
+
+                        true
+                )
+        );
+
+        steps.put("loseCaptain",
+                new QuestStep(
+                        "loseCaptain",
+
+                        "Тебя заметил капитан корабля",
 
                         "",
                         "",
