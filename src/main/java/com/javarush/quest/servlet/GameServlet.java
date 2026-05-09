@@ -40,7 +40,7 @@ public class GameServlet extends HttpServlet {
         QuestStep step =
                 questService.getStep(currentStep);
 
-        printStep(response, session, step);
+        printStep(request, response, session, step);
     }
 
     @Override
@@ -64,9 +64,7 @@ public class GameServlet extends HttpServlet {
         if ("1".equals(answer)) {
 
             nextStep = step.getFirstNextStep();
-        }
-
-        else {
+        } else {
 
             nextStep = step.getSecondNextStep();
         }
@@ -83,12 +81,11 @@ public class GameServlet extends HttpServlet {
         response.sendRedirect("game");
     }
 
-    private void printStep(HttpServletResponse response,
+    private void printStep(HttpServletRequest request,
+                           HttpServletResponse response,
                            HttpSession session,
                            QuestStep step)
-            throws IOException {
-
-        PrintWriter writer = response.getWriter();
+            throws ServletException, IOException {
 
         String playerName =
                 (String) session.getAttribute("playerName");
@@ -96,61 +93,55 @@ public class GameServlet extends HttpServlet {
         Integer stepsCount =
                 (Integer) session.getAttribute("stepsCount");
 
-        writer.println("<html><body>");
+        request.setAttribute(
+                "playerName",
+                playerName
+        );
 
-        writer.println("<h2>Игрок: " +
-                playerName + "</h2>");
+        request.setAttribute(
+                "stepsCount",
+                stepsCount
+        );
 
-        writer.println("<h3>Ходов: " +
-                stepsCount + "</h3>");
+        request.setAttribute(
+                "question",
+                step.getQuestion()
+        );
 
-        writer.println("<h1>" +
-                step.getQuestion() + "</h1>");
+        request.setAttribute(
+                "firstAnswer",
+                step.getFirstAnswer()
+        );
 
-        // ЕСЛИ ФИНАЛ
+        request.setAttribute(
+                "secondAnswer",
+                step.getSecondAnswer()
+        );
+
+        request.setAttribute(
+                "finalStep",
+                step.isFinalStep()
+        );
 
         if (step.isFinalStep()) {
 
             if (step.getId().contains("win")) {
 
-                writer.println("<h2>ПОБЕДА</h2>");
+                request.setAttribute(
+                        "result",
+                        "ПОБЕДА"
+                );
+            } else {
+
+                request.setAttribute(
+                        "result",
+                        "ПОРАЖЕНИЕ"
+                );
             }
-
-            else {
-
-                writer.println("<h2>ПОРАЖЕНИЕ</h2>");
-            }
-
-            writer.println(
-                    "<a href='start.jsp'>Начать заново</a>"
-            );
         }
 
-        // ОБЫЧНЫЙ ШАГ
-
-        else {
-
-            writer.println(
-                    "<form action='game' method='post'>"
-            );
-
-            writer.println(
-                    "<button name='answer' value='1'>"
-                            + step.getFirstAnswer() +
-                            "</button>"
-            );
-
-            writer.println("<br><br>");
-
-            writer.println(
-                    "<button name='answer' value='2'>"
-                            + step.getSecondAnswer() +
-                            "</button>"
-            );
-
-            writer.println("</form>");
-        }
-
-        writer.println("</body></html>");
+        request.getRequestDispatcher(
+                "/game.jsp"
+        ).forward(request, response);
     }
 }
