@@ -63,8 +63,6 @@ public class GameServlet extends HttpServlet {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
-        String choice = request.getParameter("choice");
-
         HttpSession session = request.getSession();
 
         Integer stepsCount =
@@ -77,34 +75,83 @@ public class GameServlet extends HttpServlet {
         String playerName =
                 (String) session.getAttribute("playerName");
 
+        String choice = request.getParameter("choice");
+
         PrintWriter writer = response.getWriter();
 
         writer.println("<html><body>");
 
         writer.println("<h2>Игрок: " + playerName + "</h2>");
 
-        writer.println("<h3>Количество ходов: " +
-                stepsCount + "</h3>");
+        writer.println("<h3>Ходов: " + stepsCount + "</h3>");
+
+        // ПЕРВАЯ СЦЕНА
 
         if ("door".equals(choice)) {
 
-            writer.println("<h1>Ты открыл дверь и нашел выход</h1>");
+            writer.println("<h1>Ты вошел в темный коридор</h1>");
 
-            writer.println("<h2>ПОБЕДА</h2>");
+            writer.println(
+                    "<form action='game' method='post'>"
+            );
+
+            writer.println(
+                    "<button name='choice' value='forward'>Идти вперед</button>"
+            );
+
+            writer.println("<br><br>");
+
+            writer.println(
+                    "<button name='choice' value='back'>Вернуться назад</button>"
+            );
+
+            writer.println("</form>");
         }
+
+        // ВЕТКА ПОРАЖЕНИЯ
 
         else if ("window".equals(choice)) {
 
-            writer.println("<h1>Ты выглянул в окно и увидел монстра</h1>");
+            writer.println(
+                    "<h1>Монстр заметил тебя через окно</h1>"
+            );
 
             writer.println("<h2>ПОРАЖЕНИЕ</h2>");
+
+            writer.println(
+                    "<a href='start.jsp'>Начать заново</a>"
+            );
         }
 
-        writer.println("<br><br>");
+        // ПОБЕДА
 
-        writer.println(
-                "<a href='start.jsp'>Начать заново</a>"
-        );
+        else if ("forward".equals(choice)) {
+
+            writer.println(
+                    "<h1>Ты нашел выход из здания</h1>"
+            );
+
+            writer.println("<h2>ПОБЕДА</h2>");
+
+            writer.println(
+                    "<a href='start.jsp'>Играть снова</a>"
+            );
+        }
+
+        // ПОРАЖЕНИЕ
+
+        else if ("back".equals(choice)) {
+
+            writer.println(
+                    "<h1>Дверь захлопнулась и ты оказался в ловушке</h1>"
+            );
+
+            writer.println("<h2>ПОРАЖЕНИЕ</h2>");
+
+            writer.println(
+                    "<a href='start.jsp'>Играть снова</a>"
+            );
+        }
 
         writer.println("</body></html>");
     }
