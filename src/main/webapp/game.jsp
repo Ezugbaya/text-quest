@@ -3,52 +3,60 @@
 <html>
 <head>
     <title>Text Quest</title>
+
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
 <body>
 
-<h2>
-    Игрок: ${playerName}
-</h2>
+<div class="container">
 
-<h3>
-    Ходов: ${stepsCount}
-</h3>
+    <h2>
+        Игрок: ${playerName}
+    </h2>
 
-<h1>
-    ${question}
-</h1>
+    <h3>
+        Ходов: ${stepsCount}
+    </h3>
 
-<%
-    Boolean finalStep =
-            (Boolean) request.getAttribute("finalStep");
-%>
+    <h1>
+        ${question}
+    </h1>
 
-<% if (finalStep) { %>
+    <%
+        Boolean finalStep =
+                (Boolean) request.getAttribute("finalStep");
+    %>
 
-    <h2>${result}</h2>
+    <% if (finalStep) { %>
 
-    <a href="start.jsp">
-        Начать заново
-    </a>
+        <h2>${result}</h2>
 
-<% } else { %>
+        <a href="${pageContext.request.contextPath}/start">
+            Начать заново
+        </a>
 
-<form action="game" method="post">
+    <% } else { %>
 
-    <button name="answer" value="1">
-        ${firstAnswer}
-    </button>
+        <form action="${pageContext.request.contextPath}/game"
+              method="post">
 
-    <br><br>
+            <button name="answer" value="1">
+                ${firstAnswer}
+            </button>
 
-    <button name="answer" value="2">
-        ${secondAnswer}
-    </button>
+            <br><br>
 
-</form>
+            <button name="answer" value="2">
+                ${secondAnswer}
+            </button>
 
-<% } %>
+        </form>
+
+    <% } %>
+
+</div>
 
 </body>
 </html>

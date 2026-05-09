@@ -79,6 +79,8 @@ public class GameServlet extends HttpServlet {
         session.setAttribute("stepsCount", stepsCount);
 
         response.sendRedirect("game");
+
+
     }
 
     private void printStep(HttpServletRequest request,
