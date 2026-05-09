@@ -65,17 +65,46 @@ public class GameServlet extends HttpServlet {
 
         String choice = request.getParameter("choice");
 
+        HttpSession session = request.getSession();
+
+        Integer stepsCount =
+                (Integer) session.getAttribute("stepsCount");
+
+        stepsCount++;
+
+        session.setAttribute("stepsCount", stepsCount);
+
+        String playerName =
+                (String) session.getAttribute("playerName");
+
         PrintWriter writer = response.getWriter();
 
         writer.println("<html><body>");
 
+        writer.println("<h2>Игрок: " + playerName + "</h2>");
+
+        writer.println("<h3>Количество ходов: " +
+                stepsCount + "</h3>");
+
         if ("door".equals(choice)) {
-            writer.println("<h1>Ты открыл дверь и вышел наружу</h1>");
+
+            writer.println("<h1>Ты открыл дверь и нашел выход</h1>");
+
+            writer.println("<h2>ПОБЕДА</h2>");
         }
 
         else if ("window".equals(choice)) {
-            writer.println("<h1>За окном была буря</h1>");
+
+            writer.println("<h1>Ты выглянул в окно и увидел монстра</h1>");
+
+            writer.println("<h2>ПОРАЖЕНИЕ</h2>");
         }
+
+        writer.println("<br><br>");
+
+        writer.println(
+                "<a href='start.jsp'>Начать заново</a>"
+        );
 
         writer.println("</body></html>");
     }
