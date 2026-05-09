@@ -1,5 +1,8 @@
 package com.javarush.quest.servlet;
 
+import com.javarush.quest.model.QuestStep;
+import com.javarush.quest.service.QuestService;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +14,9 @@ import java.io.PrintWriter;
 
 public class GameServlet extends HttpServlet {
 
+    private final QuestService questService =
+            new QuestService();
+
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -19,40 +25,22 @@ public class GameServlet extends HttpServlet {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
 
-        PrintWriter writer = response.getWriter();
-
         HttpSession session = request.getSession();
 
-        String playerName =
-                (String) session.getAttribute("playerName");
+        String currentStep =
+                (String) session.getAttribute("currentStep");
 
-        writer.println(
-                "<html>" +
-                        "<head>" +
-                        "<title>Game</title>" +
-                        "</head>" +
+        if (currentStep == null) {
 
-                        "<body>" +
+            currentStep = "start";
 
-                        "<h1>" + playerName + ", ты проснулся в тёмной комнате</h1>" +
+            session.setAttribute("currentStep", currentStep);
+        }
 
-                        "<form action='game' method='post'>" +
+        QuestStep step =
+                questService.getStep(currentStep);
 
-                        "<button name='choice' value='door'>" +
-                        "Открыть дверь" +
-                        "</button>" +
-
-                        "<br><br>" +
-
-                        "<button name='choice' value='window'>" +
-                        "Посмотреть в окно" +
-                        "</button>" +
-
-                        "</form>" +
-
-                        "</body>" +
-                        "</html>"
-        );
+        printStep(response, session, step);
     }
 
     @Override
@@ -60,10 +48,30 @@ public class GameServlet extends HttpServlet {
                           HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("text/html");
-        response.setCharacterEncoding("UTF-8");
-
         HttpSession session = request.getSession();
+
+        String currentStep =
+                (String) session.getAttribute("currentStep");
+
+        QuestStep step =
+                questService.getStep(currentStep);
+
+        String answer =
+                request.getParameter("answer");
+
+        String nextStep;
+
+        if ("1".equals(answer)) {
+
+            nextStep = step.getFirstNextStep();
+        }
+
+        else {
+
+            nextStep = step.getSecondNextStep();
+        }
+
+        session.setAttribute("currentStep", nextStep);
 
         Integer stepsCount =
                 (Integer) session.getAttribute("stepsCount");
@@ -72,85 +80,75 @@ public class GameServlet extends HttpServlet {
 
         session.setAttribute("stepsCount", stepsCount);
 
-        String playerName =
-                (String) session.getAttribute("playerName");
+        response.sendRedirect("game");
+    }
 
-        String choice = request.getParameter("choice");
+    private void printStep(HttpServletResponse response,
+                           HttpSession session,
+                           QuestStep step)
+            throws IOException {
 
         PrintWriter writer = response.getWriter();
 
+        String playerName =
+                (String) session.getAttribute("playerName");
+
+        Integer stepsCount =
+                (Integer) session.getAttribute("stepsCount");
+
         writer.println("<html><body>");
 
-        writer.println("<h2>Игрок: " + playerName + "</h2>");
+        writer.println("<h2>Игрок: " +
+                playerName + "</h2>");
 
-        writer.println("<h3>Ходов: " + stepsCount + "</h3>");
+        writer.println("<h3>Ходов: " +
+                stepsCount + "</h3>");
 
-        // ПЕРВАЯ СЦЕНА
+        writer.println("<h1>" +
+                step.getQuestion() + "</h1>");
 
-        if ("door".equals(choice)) {
+        // ЕСЛИ ФИНАЛ
 
-            writer.println("<h1>Ты вошел в темный коридор</h1>");
+        if (step.isFinalStep()) {
 
-            writer.println(
-                    "<form action='game' method='post'>"
-            );
+            if (step.getId().contains("win")) {
 
-            writer.println(
-                    "<button name='choice' value='forward'>Идти вперед</button>"
-            );
+                writer.println("<h2>ПОБЕДА</h2>");
+            }
 
-            writer.println("<br><br>");
+            else {
 
-            writer.println(
-                    "<button name='choice' value='back'>Вернуться назад</button>"
-            );
-
-            writer.println("</form>");
-        }
-
-        // ВЕТКА ПОРАЖЕНИЯ
-
-        else if ("window".equals(choice)) {
-
-            writer.println(
-                    "<h1>Монстр заметил тебя через окно</h1>"
-            );
-
-            writer.println("<h2>ПОРАЖЕНИЕ</h2>");
+                writer.println("<h2>ПОРАЖЕНИЕ</h2>");
+            }
 
             writer.println(
                     "<a href='start.jsp'>Начать заново</a>"
             );
         }
 
-        // ПОБЕДА
+        // ОБЫЧНЫЙ ШАГ
 
-        else if ("forward".equals(choice)) {
-
-            writer.println(
-                    "<h1>Ты нашел выход из здания</h1>"
-            );
-
-            writer.println("<h2>ПОБЕДА</h2>");
+        else {
 
             writer.println(
-                    "<a href='start.jsp'>Играть снова</a>"
+                    "<form action='game' method='post'>"
             );
-        }
-
-        // ПОРАЖЕНИЕ
-
-        else if ("back".equals(choice)) {
 
             writer.println(
-                    "<h1>Дверь захлопнулась и ты оказался в ловушке</h1>"
+                    "<button name='answer' value='1'>"
+                            + step.getFirstAnswer() +
+                            "</button>"
             );
 
-            writer.println("<h2>ПОРАЖЕНИЕ</h2>");
+            writer.println("<br><br>");
 
             writer.println(
-                    "<a href='start.jsp'>Играть снова</a>"
+                    "<button name='answer' value='2'>"
+                            + step.getSecondAnswer() +
+                            "</button>"
             );
+
+            writer.println("</form>");
         }
 
         writer.println("</body></html>");

@@ -19,6 +19,10 @@ public class StartServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
 
+        session.invalidate();
+
+        session = request.getSession();
+
         session.setAttribute("playerName", playerName);
 
         session.setAttribute("stepsCount", 0);
