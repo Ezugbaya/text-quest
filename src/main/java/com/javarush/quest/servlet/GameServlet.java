@@ -4,6 +4,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,6 +21,11 @@ public class GameServlet extends HttpServlet {
 
         PrintWriter writer = response.getWriter();
 
+        HttpSession session = request.getSession();
+
+        String playerName =
+                (String) session.getAttribute("playerName");
+
         writer.println(
                 "<html>" +
                         "<head>" +
@@ -28,7 +34,7 @@ public class GameServlet extends HttpServlet {
 
                         "<body>" +
 
-                        "<h1>Ты проснулся в тёмной комнате</h1>" +
+                        "<h1>" + playerName + ", ты проснулся в тёмной комнате</h1>" +
 
                         "<form action='game' method='post'>" +
 
