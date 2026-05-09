@@ -6,11 +6,11 @@
 
 ## Используемые технологии
 
-- Java 17
+- Java 11
 - Servlet API 4.0
 - JSP + JSTL
 - Maven
-- Tomcat 9
+- Tomcat 7
 - JUnit 5
 - Mockito
 - Log4j2

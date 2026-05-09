@@ -1,7 +1,6 @@
 package com.javarush.quest.servlet;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("/hello")
+
 public class HelloServlet extends HttpServlet {
 
     @Override
@@ -22,15 +21,15 @@ public class HelloServlet extends HttpServlet {
 
         PrintWriter writer = response.getWriter();
 
-        writer.println("""
-                <html>
-                    <head>
-                        <title>Hello Quest</title>
-                    </head>
-                    <body>
-                        <h1>Text Quest успешно запущен</h1>
-                    </body>
-                </html>
-                """);
+        writer.println(
+                "<html>" +
+                        "<head>" +
+                        "<title>Hello Quest</title>" +
+                        "</head>" +
+                        "<body>" +
+                        "<h1>Text Quest успешно запущен</h1>" +
+                        "</body>" +
+                        "</html>"
+        );
     }
 }
