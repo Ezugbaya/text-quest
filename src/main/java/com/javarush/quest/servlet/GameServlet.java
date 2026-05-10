@@ -10,9 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 public class GameServlet extends HttpServlet {
+
+    private static final Logger logger =
+            Logger.getLogger(GameServlet.class.getName());
 
     private final QuestService questService =
             new QuestService();
@@ -34,13 +37,21 @@ public class GameServlet extends HttpServlet {
 
             currentStep = "start";
 
-            session.setAttribute("currentStep", currentStep);
+            session.setAttribute(
+                    "currentStep",
+                    currentStep
+            );
         }
 
         QuestStep step =
                 questService.getStep(currentStep);
 
-        printStep(request, response, session, step);
+        printStep(
+                request,
+                response,
+                session,
+                step
+        );
     }
 
     @Override
@@ -48,7 +59,8 @@ public class GameServlet extends HttpServlet {
                           HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
+        HttpSession session =
+                request.getSession();
 
         String currentStep =
                 (String) session.getAttribute("currentStep");
@@ -59,28 +71,39 @@ public class GameServlet extends HttpServlet {
         String answer =
                 request.getParameter("answer");
 
+        logger.info(
+                "Игрок выбрал вариант: " + answer
+        );
+
         String nextStep;
 
         if ("1".equals(answer)) {
 
-            nextStep = step.getFirstNextStep();
+            nextStep =
+                    step.getFirstNextStep();
+
         } else {
 
-            nextStep = step.getSecondNextStep();
+            nextStep =
+                    step.getSecondNextStep();
         }
 
-        session.setAttribute("currentStep", nextStep);
+        session.setAttribute(
+                "currentStep",
+                nextStep
+        );
 
         Integer stepsCount =
                 (Integer) session.getAttribute("stepsCount");
 
         stepsCount++;
 
-        session.setAttribute("stepsCount", stepsCount);
+        session.setAttribute(
+                "stepsCount",
+                stepsCount
+        );
 
         response.sendRedirect("game");
-
-
     }
 
     private void printStep(HttpServletRequest request,
@@ -127,12 +150,18 @@ public class GameServlet extends HttpServlet {
 
         if (step.isFinalStep()) {
 
-            if (step.getId().contains("win")) {
+            logger.info(
+                    "Игра завершена. Концовка: "
+                            + step.getId()
+            );
+
+            if (step.getId().equals("winEscape")) {
 
                 request.setAttribute(
                         "result",
                         "ПОБЕДА"
                 );
+
             } else {
 
                 request.setAttribute(

@@ -1,6 +1,7 @@
 package com.javarush.quest.servlet;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+@WebServlet("/")
 public class StartServlet extends HttpServlet {
 
     @Override
@@ -24,17 +26,29 @@ public class StartServlet extends HttpServlet {
                           HttpServletResponse response)
             throws ServletException, IOException {
 
-        String playerName = request.getParameter("playerName");
+        String playerName =
+                request.getParameter("playerName");
 
-        HttpSession session = request.getSession();
+        System.out.println(
+                "Игрок начал игру: " + playerName
+        );
+
+        HttpSession session =
+                request.getSession();
 
         session.invalidate();
 
         session = request.getSession();
 
-        session.setAttribute("playerName", playerName);
+        session.setAttribute(
+                "playerName",
+                playerName
+        );
 
-        session.setAttribute("stepsCount", 0);
+        session.setAttribute(
+                "stepsCount",
+                0
+        );
 
         response.sendRedirect("game");
     }
